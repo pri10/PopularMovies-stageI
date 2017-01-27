@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import static com.example.pri.popularmovies_i.R.id.gridview;
 
 public class MainActivity extends AppCompatActivity {
-String API_KEY="325098ce1b71c2bbfa060a097a4bfb86";
+String API_KEY="";
     String url = " http://image.tmdb.org/t/p/" + "w185" + "/WLQN5aiQG8wc9SeKwixW7pAR8K.jpg"+API_KEY;
     GridView gridView;
     ImageView griditem;
