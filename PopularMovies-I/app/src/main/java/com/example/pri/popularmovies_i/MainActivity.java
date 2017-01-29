@@ -1,13 +1,17 @@
 package com.example.pri.popularmovies_i;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
@@ -31,6 +35,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static android.R.attr.data;
+import static com.example.pri.popularmovies_i.R.id.grid_item;
 import static com.example.pri.popularmovies_i.R.id.gridview;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,11 +44,10 @@ public class MainActivity extends AppCompatActivity {
     private String TAG = MainActivity.class.getSimpleName();
 
 
-    String API_KEY = "325098ce1b71c2bbfa060a097a4bfb86";
-    private static String Base_URL = "https://api.themoviedb.org/3/movie/popular?api_key=325098ce1b71c2bbfa060a097a4bfb86";
+//    String API_KEY = getString(R.string.api);
+    private  String Base_URL = "https://api.themoviedb.org/3/movie/popular?api_key=325098ce1b71c2bbfa060a097a4bfb86";
     //  String url = " http://image.tmdb.org/t/p/"+"w185/"+"https://api.themoviedb.org/3/movie/popular?api_key="+API_KEY;
   //  String poster_path = "5gJkVIVU7FDp7AfRAbPSvvdbre2.jpg";
-
     GridView gridView;
     ImageView griditem;
     Boolean downloading;
@@ -62,36 +67,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public class GridViewAdapter extends ArrayAdapter {
-
-        private Context context;
-        private int layoutResourceId;
-        private ArrayList<GridItem> grid_data = new ArrayList<GridItem>();
-
-        public GridViewAdapter(Context context, int layoutResourceId, ArrayList<String> grid_data) {
-            super(context, layoutResourceId, grid_data);
-            this.layoutResourceId = layoutResourceId;
-            this.context = context;
-        }
-
-
-
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ImageView griditem = null;
-
-            if (convertView == null) {
-                griditem = new ImageView(context);
-                griditem.setLayoutParams(new GridView.LayoutParams(200, 200));
-                griditem.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            } else {
-                griditem = (ImageView) convertView;
-            }
-            griditem = grid_data.get(position);
-
-
-            return griditem;
-        }
-    }
 
     public class DownloadImages extends AsyncTask<String, String, Void> {
 
@@ -139,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                         // adding contact to contact list
                         String url="http://image.tmdb.org/t/p/w185"+poster_path;
                         grid_data.add(url);
-                        Picasso.with(getApplicationContext()).load(url).into(griditem);
+
 
                     }
                 } catch (final JSONException e) {
@@ -176,9 +151,79 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             downloading = false;
-            gridView.invalidateViews();
 
+           gridView.setAdapter(new GridViewAdapter(getApplicationContext(),grid_data));
 
         }
+    }
+
+    public class GridViewAdapter extends BaseAdapter {
+
+        private Context context;
+        private int layoutResourceId;
+        private ArrayList<String> data;
+
+        public GridViewAdapter(Context context, ArrayList<String> grid_data) {
+            this.context = context;
+            this.data=grid_data;
+        }
+
+
+        @Override
+        public int getCount() {
+            return data.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ImageView imageView=new ImageView(context);
+           imageView.setScaleType(ImageView.ScaleType.FIT_START);
+            imageView.setLayoutParams(new GridView.LayoutParams(500,500));
+            Picasso.with(MainActivity.this).load(data.get(position)).into(imageView);
+            return imageView;
+        }
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.popular) {
+                update();
+            return true;
+        }
+
+        if (id == R.id.top_rated) {
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void update(){
+        String top="http://api.themoviedb.org/3/discover/movie?sort_by=toprated.desc&api_key=325098ce1b71c2bbfa060a097a4bfb86";
+        DownloadImages downloadImages = new DownloadImages();
+        downloadImages.execute(top);
+Picasso.with(MainActivity.this).load(top).into(griditem);
     }
 }

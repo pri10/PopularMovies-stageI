@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">PopularMovies-I</string>
+    <string name="app_name">Popular Movies</string>
+
+    <string name="action_pop">Most Popular</string>
+    <string name="action_rat">Top Rated</string>
+
+    <string name="api">325098ce1b71c2bbfa060a097a4bfb86</string>
 </resources>
