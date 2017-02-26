@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
             downloading = true;
         }
 
-        protected Void doInBackground(String... params) {
+        public Void doInBackground(String... params) {
             HttpHandler sh = new HttpHandler();
 
             // Making a request to url and getting response
@@ -208,12 +208,12 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.popular) {
-                update();
+
             return true;
         }
 
         if (id == R.id.top_rated) {
-
+            update();
             return true;
         }
 
@@ -221,9 +221,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void update(){
-        String top="http://api.themoviedb.org/3/discover/movie?sort_by=toprated.desc&api_key=325098ce1b71c2bbfa060a097a4bfb86";
-        DownloadImages downloadImages = new DownloadImages();
-        downloadImages.execute(top);
+        String top="https://api.themoviedb.org/3/movie/top_rated?api_key=325098ce1b71c2bbfa060a097a4bfb86&language=en-US&page=1";
+        new DownloadImages();
+      DownloadImages downloadImages = new DownloadImages();
+       downloadImages.execute(top);
 Picasso.with(MainActivity.this).load(top).into(griditem);
     }
+
+
 }
