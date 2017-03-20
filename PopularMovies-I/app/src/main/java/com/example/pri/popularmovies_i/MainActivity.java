@@ -2,6 +2,8 @@ package com.example.pri.popularmovies_i;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
@@ -38,6 +41,7 @@ import java.util.HashMap;
 import static android.R.attr.data;
 import static com.example.pri.popularmovies_i.R.id.grid_item;
 import static com.example.pri.popularmovies_i.R.id.gridview;
+import static java.security.AccessController.getContext;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 //    String API_KEY = getString(R.string.api);
-    private  String Base_URL = "https://api.themoviedb.org/3/movie/popular?api_key=325098ce1b71c2bbfa060a097a4bfb86";
+    private  String Base_URL = "http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=325098ce1b71c2bbfa060a097a4bfb86";
     //  String url = " http://image.tmdb.org/t/p/"+"w185/"+"https://api.themoviedb.org/3/movie/popular?api_key="+API_KEY;
   //  String poster_path = "5gJkVIVU7FDp7AfRAbPSvvdbre2.jpg";
     GridView gridView;
@@ -65,7 +69,32 @@ public class MainActivity extends AppCompatActivity {
         DownloadImages downloadImages = new DownloadImages();
         downloadImages.execute();
 
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent=new Intent(MainActivity.this,Details_Activity.class);
+                startActivity(intent);
+            }
+        });
+
+
+
     }
+    boolean CheckConnection()
+    {
+        ConnectivityManager cm =
+                (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        if(isConnected==false){
+
+
+        }
+
+        return isConnected;  }
+
 
 
     public class DownloadImages extends AsyncTask<String, String, Void> {
@@ -78,8 +107,6 @@ public class MainActivity extends AppCompatActivity {
 
         public Void doInBackground(String... params) {
             HttpHandler sh = new HttpHandler();
-
-            // Making a request to url and getting response
             String jsonStr = sh.makeServiceCall(Base_URL);
 
             Log.e(TAG, "Response from url: " + jsonStr);
@@ -88,10 +115,9 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     JSONObject jsonObj = new JSONObject(jsonStr);
 
-                    // Getting JSON Array node
+
                     JSONArray image = jsonObj.getJSONArray("results");
 
-                    // looping through All Contacts
                     for (int i = 0; i < image.length(); i++) {
                         JSONObject c = image.getJSONObject(i);
 
@@ -101,17 +127,16 @@ public class MainActivity extends AppCompatActivity {
                         String vote_average = c.getString("vote_average");
                         String release_date = c.getString("release_date");
 
-                        // tmp hash map for single contact
+
                         HashMap<String, String> images = new HashMap<>();
 
-                        // adding each child node to HashMap key => value
+
                         images.put("original_title", original_title);
                         images.put("poster_path", poster_path);
                         images.put("overview", overview);
                         images.put("vote_average", vote_average);
                         images.put("release_date", release_date);
 
-                        // adding contact to contact list
                         String url="http://image.tmdb.org/t/p/w185"+poster_path;
                         grid_data.add(url);
 
@@ -128,7 +153,6 @@ public class MainActivity extends AppCompatActivity {
                                     .show();
                         }
                     });
-
                 }
             } else {
                 Log.e(TAG, "Couldn't get json from server.");
@@ -169,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+
         @Override
         public int getCount() {
             return data.size();
@@ -206,27 +231,17 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.popular) {
+                      //noinspection SimplifiableIfStatement
+                               if (id == R.id.popular) {
 
-            return true;
-        }
+                       return true;
+                   }
 
-        if (id == R.id.top_rated) {
-            update();
-            return true;
-        }
+                       if (id == R.id.top_rated) {
+                                          return true;
+                   }
 
-        return super.onOptionsItemSelected(item);
+                       return super.onOptionsItemSelected(item);
     }
-
-    public void update(){
-        String top="https://api.themoviedb.org/3/movie/top_rated?api_key=325098ce1b71c2bbfa060a097a4bfb86&language=en-US&page=1";
-        new DownloadImages();
-      DownloadImages downloadImages = new DownloadImages();
-       downloadImages.execute(top);
-Picasso.with(MainActivity.this).load(top).into(griditem);
-    }
-
 
 }
