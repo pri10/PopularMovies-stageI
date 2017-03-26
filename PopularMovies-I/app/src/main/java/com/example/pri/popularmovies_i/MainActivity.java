@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 //    String API_KEY = getString(R.string.api);
-    private  String Base_URL = "http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=325098ce1b71c2bbfa060a097a4bfb86";
+    private  String Base_URL = "http://api.themoviedb.org/3/movie/popular?api_key=325098ce1b71c2bbfa060a097a4bfb86";
     //  String url = " http://image.tmdb.org/t/p/"+"w185/"+"https://api.themoviedb.org/3/movie/popular?api_key="+API_KEY;
   //  String poster_path = "5gJkVIVU7FDp7AfRAbPSvvdbre2.jpg";
     GridView gridView;
@@ -80,20 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    boolean CheckConnection()
-    {
-        ConnectivityManager cm =
-                (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-        if(isConnected==false){
-
-
-        }
-
-        return isConnected;  }
 
 
 
@@ -108,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
         public Void doInBackground(String... params) {
             HttpHandler sh = new HttpHandler();
             String jsonStr = sh.makeServiceCall(Base_URL);
+
 
             Log.e(TAG, "Response from url: " + jsonStr);
 
@@ -137,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                         images.put("vote_average", vote_average);
                         images.put("release_date", release_date);
 
-                        String url="http://image.tmdb.org/t/p/w185"+poster_path;
+                       String url="http://image.tmdb.org/t/p/w185"+poster_path;
                         grid_data.add(url);
 
 
@@ -233,11 +221,13 @@ public class MainActivity extends AppCompatActivity {
 
                       //noinspection SimplifiableIfStatement
                                if (id == R.id.popular) {
-
+new DownloadImages().execute("http://api.themoviedb.org/3/movie/popular?api_key=325098ce1b71c2bbfa060a097a4bfb86");
                        return true;
                    }
 
                        if (id == R.id.top_rated) {
+                           new DownloadImages().execute("http://api.themoviedb.org/3/movie/top_rated?api_key=325098ce1b71c2bbfa060a097a4bfb86");
+
                                           return true;
                    }
 
